@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-## author: amanul haque
+# author: amanul haque
 #
 
 from nltk.corpus import stopwords

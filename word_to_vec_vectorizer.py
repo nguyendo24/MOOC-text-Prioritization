@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-## author: amanul haque
+# author: amanul haque
 #
 
 from gensim.models import Word2Vec

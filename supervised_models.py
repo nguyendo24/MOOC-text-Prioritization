@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 #
-## author: amanul haque
+# author: amanul haque
 #
-
 from word_to_vec_vectorizer import vectorization
 from sklearn import svm
 from sklearn.svm import LinearSVC
