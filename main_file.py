@@ -11,25 +11,42 @@ from data_preprocessing_1 import data_preprocessing_1
 from data_preprocessing_2 import data_preprocessing_2
 from data_preprocessing_3 import data_preprocessing_3
 from semi_supervised_classification import semi_supervised_classification
+import math
 
 class main_file:
     
     def __init__(self):
         
-        self.input_file_path = "input_file.xlsx"
+        self.input_file_path = "input_file.csv"
         self.output_file_path = "output_file_3.csv"
         
     def get_input_text_and_label(self, df):
         #print(data['text'])
-        X = np.array(df['text'])
-        y = np.array(df['label'])
+        X = np.array(df['Text'])
+        y = np.array(df['Label'])
         
         return X, y
     
     def get_test_train_split(self, X, y):
-        labelled_set = np.array(range(6))
-        unlabelled_set = np.array(range(6,len(y)))
-        y[unlabelled_set] = -1
+        unlabelled_set = []
+        labelled_set = []
+        labels = []
+        index = 0
+        for label in y:
+            if label == "NA" or math.isnan(label):
+                unlabelled_set.append(index)
+                labels.append(-1)
+            else:
+                labelled_set.append(index)
+                labels.append(label)
+            index+=1
+        
+        unlabelled_set = np.array(unlabelled_set)
+        labelled_set = np.array(labelled_set)  
+        labels = np.array(labels)
+        print("unlabelled_set ", unlabelled_set, unlabelled_set.shape)
+        print("labelled_set :", labelled_set, labelled_set.shape)
+        print("lables: ", labels, labels.shape)
         
         return y, labelled_set, unlabelled_set
 
@@ -55,15 +72,18 @@ class main_file:
 if __name__ == '__main__':
     
     mf = main_file()
-    df = pd.read_excel(mf.input_file_path, sep=',')
+    df = pd.read_csv(mf.input_file_path, sep=',')
     X, y = mf.get_input_text_and_label(df)
+    print(y)
+    '''
     X = data_preprocessing_1().process_data(X)
     X = data_preprocessing_2().process_data(X)    
     X = data_preprocessing_3().preprocess_text(X)
-    df = mf.update_dataframe(df, X)
-    df.to_csv(mf.output_file_path)
-    
+    #df = mf.update_dataframe(df, X)
+    #df.to_csv(mf.output_file_path)
+    '''
     y, labelled_set, unlabelled_set = mf.get_test_train_split(X, y)
+    sys.exit()
     X_train, y_train, X_test = mf.get_vectorized_data(X, y, labelled_set, unlabelled_set)
     
     sample_rate=0.2
