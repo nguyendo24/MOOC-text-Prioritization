@@ -9,6 +9,7 @@ import string
 import nltk
 import sys
 import numpy as np
+import math
 
 class data_preprocessing_3:
     
@@ -60,7 +61,7 @@ class data_preprocessing_3:
         new_words = []
         for word in tokenized_words:
             if word.isdigit():
-                new_words.append("DIGIT")
+                new_words.append("digit")
             else:
                 new_words.append(word)
         return new_words
@@ -91,7 +92,11 @@ class data_preprocessing_3:
             comments = self.replace_question_marks(comments)
             
             comments = " ".join(comments)
-            new_X.append(comments)
+            if(len(comments) == 0):
+                #print("NAN detected")
+                new_X.append("empty_text")
+            else:
+                new_X.append(str(comments))    
             
         return np.array(new_X)
             

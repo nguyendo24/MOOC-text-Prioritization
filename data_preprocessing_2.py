@@ -24,9 +24,9 @@ class data_preprocessing_2:
             start_index = int(mt.start())
             end_index = int(mt.end())
             
-            print("matched string is : ", string[start_index:end_index], "\t", start_index, "\t", end_index)
+            #print("matched string is : ", string[start_index:end_index], "\t", start_index, "\t", end_index)
             str_list = list(string)
-            str_list = str_list[:start_index] + list('<WEBSITE_ADDRESS>') + str_list[end_index:]
+            str_list = str_list[:start_index] + list('website_address') + str_list[end_index:]
             string = "".join(str_list[0:len(str_list)])
             
             return self.detect_website_address(string)
@@ -41,9 +41,9 @@ class data_preprocessing_2:
             start_index = int(mt.start())
             end_index = int(mt.end())
             
-            print("matched string is : ", string[start_index:end_index], "\t", start_index, "\t", end_index)
+            #print("matched string is : ", string[start_index:end_index], "\t", start_index, "\t", end_index)
             str_list = list(string)
-            str_list = str_list[:start_index] + list('<ASSERTION_ERROR>') + str_list[end_index:]
+            str_list = str_list[:start_index] + list('assertion_error') + str_list[end_index:]
             string = "".join(str_list[0:len(str_list)])
             
             return self.detect_assertion_errors(string)
@@ -59,9 +59,9 @@ class data_preprocessing_2:
             start_index = int(mt.start())
             end_index = int(mt.end())
             
-            print("matched string is : ", string[start_index:end_index], "\t", start_index, "\t", end_index)
+            #print("matched string is : ", string[start_index:end_index], "\t", start_index, "\t", end_index)
             str_list = list(string)
-            str_list = str_list[:start_index] + list('<COMMENT>') + str_list[end_index:]
+            str_list = str_list[:start_index] + list('comment_line') + str_list[end_index:]
             string = "".join(str_list[0:len(str_list)])
             
             return self.detect_comments(string)
@@ -76,9 +76,9 @@ class data_preprocessing_2:
             start_index = int(mt.start())
             end_index = int(mt.end())
             
-            print("matched string is : ", string[start_index:end_index], "\t", start_index, "\t", end_index)
+            #print("matched string is : ", string[start_index:end_index], "\t", start_index, "\t", end_index)
             str_list = list(string)
-            str_list = str_list[:start_index] + list('<SOP_STATEMENT>') + str_list[end_index:]
+            str_list = str_list[:start_index] + list('sop_statement') + str_list[end_index:]
             string = "".join(str_list[0:len(str_list)])
             
             return self.detect_sop_statements(string)
@@ -94,9 +94,9 @@ class data_preprocessing_2:
             start_index = int(mt.start())
             end_index = int(mt.end())
             
-            print("matched string is : ", string[start_index:end_index], "\t", start_index, "\t", end_index)
+            #print("matched string is : ", string[start_index:end_index], "\t", start_index, "\t", end_index)
             str_list = list(string)
-            str_list = str_list[:start_index] + list('<FILE_PATH>') + str_list[end_index:]
+            str_list = str_list[:start_index] + list('file_path') + str_list[end_index:]
             string = "".join(str_list[0:len(str_list)])
             
             return self.detect_file_paths(string)
@@ -108,9 +108,9 @@ class data_preprocessing_2:
             start_index = int(mt.start())
             end_index = int(mt.end())
             
-            print("matched string is : ", string[start_index:end_index], "\t", start_index, "\t", end_index)
+            #print("matched string is : ", string[start_index:end_index], "\t", start_index, "\t", end_index)
             str_list = list(string)
-            str_list = str_list[:start_index] + list('<FILE_PATH>') + str_list[end_index:]
+            str_list = str_list[:start_index] + list('file_path') + str_list[end_index:]
             string = "".join(str_list[0:len(str_list)])
             
             return self.detect_file_paths(string)
@@ -129,7 +129,7 @@ class data_preprocessing_2:
             
             #print("matched string is : ", string[start_index:end_index])
             str_list = list(string)
-            str_list = str_list[:start_index] + list('<ERROR_MESSAGE>') + str_list[end_index:]
+            str_list = str_list[:start_index] + list('error_message') + str_list[end_index:]
             string = "".join(str_list[0:len(str_list)])
             
             return self.detect_error_messages(string)
@@ -142,7 +142,7 @@ class data_preprocessing_2:
             
             #print("matched string is : ", string[start_index:end_index])
             str_list = list(string)
-            str_list = str_list[:start_index] + list('<JAVA_ERROR>') + str_list[end_index:]
+            str_list = str_list[:start_index] + list('java_error_message') + str_list[end_index:]
             string = "".join(str_list[0:len(str_list)])
             
             return self.detect_error_messages(string)
@@ -171,7 +171,7 @@ class data_preprocessing_2:
                 string = "".join(str_list[0:len(str_list)])
                 return string
             elif(str_list[end_index-1] == '('):
-                string, flag = self.code_parser(start_index, end_index, str_list, "<METHOD_NAME>", ['(',')'])
+                string, flag = self.code_parser(start_index, end_index, str_list, "method_name", ['(',')'])
                 #String ended without any closing brackets
                 if(len(string) == 0):                
                     return string
@@ -185,7 +185,7 @@ class data_preprocessing_2:
     
     def identify_method_blocks(self, string, flag):
         
-        pattern = r"<METHOD_NAME>\s+\{"
+        pattern = r"method_name\s+\{"
         #print("Current string is : ", string)
         mt = re.search(pattern, string)
         str_list = list(string)
@@ -203,7 +203,7 @@ class data_preprocessing_2:
                 string = "".join(str_list[0:len(str_list)])
                 return string
             elif(str_list[end_index-1] == '{'):
-                string, flag = self.code_parser(start_index, end_index, str_list, "<METHOD_BLOCK>", ['{','}'])
+                string, flag = self.code_parser(start_index, end_index, str_list, "method_block", ['{','}'])
                 #String ended without any closing brackets
                 if(len(string) == 0):                
                     return string
@@ -234,7 +234,7 @@ class data_preprocessing_2:
                 string = "".join(str_list[0:len(str_list)])
                 return string
             elif(str_list[end_index-1] == '{'):
-                string, flag = self.code_parser(start_index, end_index, str_list, "<CLASS_BLOCK>", ['{','}'])
+                string, flag = self.code_parser(start_index, end_index, str_list, "class_block", ['{','}'])
                 #String ended without any closing brackets
                 if(len(string) == 0):                
                     return string
@@ -247,10 +247,10 @@ class data_preprocessing_2:
         
     def identify_class_blocks_2(self, string):
         
-        pattern = r"(public|private)\s+((\w+\s*)?)((\w+\s*)?)((\w+\s*)?)<METHOD_BLOCK>"
-        print("Current string is : ", string)
+        pattern = r"(public|private)\s+((\w+\s*)?)((\w+\s*)?)((\w+\s*)?)method_block"
+        #print("Current string is : ", string)
         if(re.search(pattern, string) != None):
-            string = re.sub(pattern, r'<CODE_BLOCK>' ,string)
+            string = re.sub(pattern, r'code_block' ,string)
             return self.identify_class_blocks_2(string)
         return string
         
@@ -299,7 +299,7 @@ class data_preprocessing_2:
             #print("index :", index)
         #if(index%2 == 0):
             #print("index :", index)
-            print("Before Processing ", str(cmt))
+            #print("Before Processing ", str(cmt))
             cmt_processed = self.detect_website_address(cmt)
             cmt_processed = self.detect_assertion_errors(cmt_processed)
             cmt_processed = self.detect_sop_statements(cmt_processed)
@@ -307,7 +307,7 @@ class data_preprocessing_2:
             cmt_processed = self.detect_error_messages(cmt_processed)
             cmt_processed = self.detect_file_paths(cmt_processed)
             cmt_processed = self.identify_code_blocks(cmt_processed)
-            print("\n\nAfter processing : ", cmt_processed)
+            #print("\n\nAfter processing : ", cmt_processed)
             processed_comments.append(cmt_processed)
             
         return np.array(processed_comments)

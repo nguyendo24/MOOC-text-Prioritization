@@ -24,11 +24,11 @@ class semi_supervised_classification:
         X_train, y_train, X_test, labelled_set, unlabelled_set = vectorizor.vectorize_text(X, y)
         return  X_train, y_train, X_test, labelled_set, unlabelled_set
     
-    def pseudo_labelling(self, final_y, X_train, y_train, X_test, labelled_set, unlabelled_set, sample_rate):
+    def pseudo_labelling(self, final_y, X_train, y_train, X_test, labelled_set, unlabelled_set, sample_rate, clf=None):
     #def pseudo_labelling(self, X, y, X_train, y_train, X_test, X_orig):
         
         if(-1 not in final_y):
-            return final_y 
+            return final_y, clf
         
         num_of_samples = math.ceil(len(X_train) * self.sample_rate)
         print("num_of_samples : ", num_of_samples)        
@@ -40,7 +40,7 @@ class semi_supervised_classification:
         print("unlabelled set : ", unlabelled_set, unlabelled_set.shape)
         
         cl = classification()
-        predicted_labels, prediction_confidence = cl.classifier_2(X_train, y_train, X_test, labelled_set, unlabelled_set)
+        predicted_labels, prediction_confidence, clf = cl.classifier_2(X_train, y_train, X_test, labelled_set, unlabelled_set)
         print(predicted_labels, predicted_labels.shape)
         print(prediction_confidence, prediction_confidence.shape)
         sorted_indices = np.argsort(np.absolute(prediction_confidence))
@@ -77,7 +77,7 @@ class semi_supervised_classification:
         y_train = np.concatenate((y_train, new_train_y), axis = 0)
         X_test = np.delete(X_test, pseudo_labelled_indices, axis=0)
         print()
-        return self.pseudo_labelling(final_y, X_train, y_train, X_test, labelled_set, unlabelled_set, sample_rate)    
+        return self.pseudo_labelling(final_y, X_train, y_train, X_test, labelled_set, unlabelled_set, sample_rate, clf)    
     
     def write_to_csv(self, X, y, filepath):
         

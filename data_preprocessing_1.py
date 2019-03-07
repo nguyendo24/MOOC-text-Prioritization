@@ -41,9 +41,9 @@ class data_preprocessing_1:
                   # get particular cell value    
                   cell_obj=sheet.cell(row=i,column=j)
                   # print cell value     
-                  print(cell_obj.value,end=' | ')
+                  #print(cell_obj.value,end=' | ')
              # print new line
-             print('\n')
+             #print('\n')
                 
     
     def read_data(self, filepath):
@@ -121,7 +121,7 @@ class data_preprocessing_1:
     
 if __name__ == '__main__':
     
-    dp = data_preprocessing()
+    dp = data_preprocessing_1()
     df = dp.read_data(dp.input_data_file_path)
     df = dp.process_data_2(df)
     #print(df)

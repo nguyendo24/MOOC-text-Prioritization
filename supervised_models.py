@@ -23,7 +23,7 @@ class classification:
         clf.fit(X_train, y_train)
         predicted_labels = clf.predict(X_test)
         prediction_confidence = clf.decision_function(X_test)
-        return predicted_labels, prediction_confidence
+        return predicted_labels, prediction_confidence, clf
        
 # =============================================================================
 # cl = classification()

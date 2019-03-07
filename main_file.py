@@ -17,8 +17,8 @@ class main_file:
     
     def __init__(self):
         
-        self.input_file_path = "input_file.csv"
-        self.output_file_path = "output_file_3.csv"
+        self.input_file_path = "output_file.csv"
+        self.output_file_path = "output_file_2.csv"
         
     def get_input_text_and_label(self, df):
         #print(data['text'])
@@ -44,11 +44,11 @@ class main_file:
         unlabelled_set = np.array(unlabelled_set)
         labelled_set = np.array(labelled_set)  
         labels = np.array(labels)
-        print("unlabelled_set ", unlabelled_set, unlabelled_set.shape)
-        print("labelled_set :", labelled_set, labelled_set.shape)
-        print("lables: ", labels, labels.shape)
+        #print("unlabelled_set ", unlabelled_set, unlabelled_set.shape)
+        #print("labelled_set :", labelled_set, labelled_set.shape)
+        #print("lables: ", labels, labels.shape)
         
-        return y, labelled_set, unlabelled_set
+        return labels, labelled_set, unlabelled_set
 
     
     def get_vectorized_data(self, X, y, labelled_set, unlabelled_set):
@@ -64,39 +64,78 @@ class main_file:
         df_new = pd.DataFrame(columns=column_headers)
         
         for index, row in df.iterrows():
-            row['text'] = X[i]
+            row['Text'] = X[i]
             df_new.loc[i] = row
             i += 1
         return df_new
     
+    def remove_nan(self, X):
+        new_X = []
+        for x in X:
+            if x == 'nan':
+                new_X.append("empty_string")
+            else:
+                new_X.append(x)
+                
+                
+        return np.array(new_X)
+    
+    def exp(self):
+        n = np.array([[1,2],[3,4]])
+        print(n.shape)
+                
+    
 if __name__ == '__main__':
     
     mf = main_file()
+    
     df = pd.read_csv(mf.input_file_path, sep=',')
     X, y = mf.get_input_text_and_label(df)
-    print(y)
+    
     '''
     X = data_preprocessing_1().process_data(X)
     X = data_preprocessing_2().process_data(X)    
     X = data_preprocessing_3().preprocess_text(X)
-    #df = mf.update_dataframe(df, X)
-    #df.to_csv(mf.output_file_path)
-    '''
-    y, labelled_set, unlabelled_set = mf.get_test_train_split(X, y)
+    
+    X = mf.remove_nan(X)
+    
+    df = mf.update_dataframe(df, X)
+    df.to_csv(mf.output_file_path)
+    
     sys.exit()
+    '''
+    
+    y, labelled_set, unlabelled_set = mf.get_test_train_split(X, y)
+    
+    '''
+    print(y, y.shape)
+    print(labelled_set, labelled_set.shape)
+    print(unlabelled_set, unlabelled_set.shape)
+    
+    sys.exit()
+    '''
+    
+    print("X shape ", X.shape)
     X_train, y_train, X_test = mf.get_vectorized_data(X, y, labelled_set, unlabelled_set)
+    print("Vectorized X train shape ", X_train.shape)
+    print(y_train.shape)
+    print(X_test.shape)
+    #sys.exit()
+    
     
     sample_rate=0.2
-    final_labels = semi_supervised_classification().pseudo_labelling(y, X_train, y_train, X_test, labelled_set, unlabelled_set, sample_rate)
+    final_labels, clf = semi_supervised_classification().pseudo_labelling(y, X_train, y_train, X_test, labelled_set, unlabelled_set, sample_rate)
     
+    '''
     print("y : ", y)
     print("labelled_set : ", labelled_set)
     print("unlablled_set : ", unlabelled_set)
+    '''
     
-    print(X_train.shape)
-    print(y_train.shape)
-    print(X_test.shape)
-    print("final_labels :", final_labels)
+   
+    print("final_labels :", final_labels, final_labels.shape)
+    unique, counts = np.unique(final_labels, return_counts=True)
+    print(dict(zip(unique, counts)))
     
     #df = mf.update_dataframe(df, X)
     #df.to_csv(mf.output_file_path)

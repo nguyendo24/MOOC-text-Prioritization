@@ -64,10 +64,20 @@ class vectorization:
         model = Word2Vec.load("w2v_model")
         w2v = dict(zip(model.wv.index2word, model.wv.syn0))
         
+        #print("Before: ", X.shape)
         X = MeanEmbeddingVectorizer(w2v).transform(X)
+        #print("X shape vectorized ",X.shape )
         #print(X[labelled_set], X[labelled_set].shape)
         #sys.exit()
         
+        '''
+        i=0
+        for x in X:
+            if(x.shape[0]!=100):
+                print(i)
+                sys.exit()
+            i+=1
+        '''
         #print(X, type(X), X.shape)
         X_train, X_test = X[labelled_set], X[unlabelled_set]
         y_train = y[labelled_set]
