@@ -11,6 +11,8 @@ from data_preprocessing_1 import data_preprocessing_1
 from data_preprocessing_2 import data_preprocessing_2
 from data_preprocessing_3 import data_preprocessing_3
 from semi_supervised_classification import semi_supervised_classification
+from sklearn.metrics import classification_report
+from sklearn.metrics import confusion_matrix
 import math
 
 class main_file:
@@ -79,11 +81,16 @@ class main_file:
                 
                 
         return np.array(new_X)
+        
+    def classification_rep(self, X_test, y_true, clf):
+        y_pred = clf.predict(X_test)
+        target_names = ['Non_Urgent', 'Urgent']
+        return classification_report(y_true, y_pred, target_names=target_names)
     
-    def exp(self):
-        n = np.array([[1,2],[3,4]])
-        print(n.shape)
-                
+    def confusion_mat(self, X_test, y_true, clf):
+        y_pred = clf.predict(X_test)
+        print(y_pred)
+        return confusion_matrix(y_true, y_pred, labels=["Non_Urgent", 'Urgent'])            
     
 if __name__ == '__main__':
     
@@ -117,6 +124,12 @@ if __name__ == '__main__':
     
     print("X shape ", X.shape)
     X_train, y_train, X_test = mf.get_vectorized_data(X, y, labelled_set, unlabelled_set)
+    '''
+    print(y_train, y_train.shape)
+    unique, counts = np.unique(y_train, return_counts=True)
+    print(dict(zip(unique, counts)))
+    sys.exit()
+    '''
     print("Vectorized X train shape ", X_train.shape)
     print(y_train.shape)
     print(X_test.shape)
@@ -136,6 +149,9 @@ if __name__ == '__main__':
     print("final_labels :", final_labels, final_labels.shape)
     unique, counts = np.unique(final_labels, return_counts=True)
     print(dict(zip(unique, counts)))
+
+    print(mf.classification_rep(X_train, y_train, clf))
+    print(mf.confusion_mat(X_train, y_train, clf))
     
     #df = mf.update_dataframe(df, X)
     #df.to_csv(mf.output_file_path)
