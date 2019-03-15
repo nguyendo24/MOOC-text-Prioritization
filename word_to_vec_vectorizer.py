@@ -14,6 +14,10 @@ from sklearn.semi_supervised import label_propagation
 from sklearn.metrics import confusion_matrix, classification_report
 import sys
 
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import TfidfTransformer
+
 class MeanEmbeddingVectorizer(object):
     def __init__(self, word2vec):
         self.word2vec = word2vec
@@ -53,7 +57,7 @@ class vectorization:
         
         return X, y
     
-    def vectorize_text(self, X, y, labelled_set, unlabelled_set):
+    def word2vec_vectorization(self, X, y, labelled_set, unlabelled_set):
         
         #X, y, labelled_set, unlabelled_set = self.get_test_train_split(X, y) 
         #print(labelled_set, X[labelled_set], y[labelled_set])
@@ -82,3 +86,22 @@ class vectorization:
         X_train, X_test = X[labelled_set], X[unlabelled_set]
         y_train = y[labelled_set]
         return X_train, y_train, X_test
+    
+    def tfidf_vectorization(self, X, y, labelled_set, unlabelled_set):
+        vectorizer = TfidfVectorizer(ngram_range=(1,1), max_df=0.8, norm='l2', use_idf=True, smooth_idf=True, sublinear_tf=False)
+        #print(X.shape)
+        #vectorizer = CountVectorizer(stop_words='english')
+        X = vectorizer.fit_transform(X)
+        tf = X.toarray()
+        terms_index = vectorizer.get_feature_names()
+        transformer = TfidfTransformer()
+        Y = transformer.fit_transform(tf)
+        tfidf = Y.toarray()
+        #print(tfidf.shape)
+        #print(tfidf[0])
+        X_train, X_test = tfidf[labelled_set], tfidf[unlabelled_set]
+        y_train = y[labelled_set]
+        return X_train, y_train, X_test, vectorizer
+	
+	
+        

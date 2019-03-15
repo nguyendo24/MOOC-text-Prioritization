@@ -13,6 +13,7 @@ from data_preprocessing_3 import data_preprocessing_3
 from semi_supervised_classification import semi_supervised_classification
 from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
+from supervised_models import classification
 import math
 
 class main_file:
@@ -56,7 +57,7 @@ class main_file:
     def get_vectorized_data(self, X, y, labelled_set, unlabelled_set):
         vectorizor = vectorization()
         #X, y = vectorizor.get_data(filepath)
-        X_train, y_train, X_test = vectorizor.vectorize_text(X, y, labelled_set, unlabelled_set)
+        X_train, y_train, X_test = vectorizor.word2vec_vectorization(X, y, labelled_set, unlabelled_set)
         return  X_train, y_train, X_test
     
     def update_dataframe(self, df, X):
@@ -89,8 +90,40 @@ class main_file:
     
     def confusion_mat(self, X_test, y_true, clf):
         y_pred = clf.predict(X_test)
-        print(y_pred)
-        return confusion_matrix(y_true, y_pred, labels=["Non_Urgent", 'Urgent'])            
+        pred_conf = clf.decision_function(X_test)
+        print("Final labelling")
+        for y_p, y_t, conf in zip(y_pred, y_true, pred_conf):
+            print(y_p, "\t", y_t, "\t", conf)
+        return confusion_matrix(y_true, y_pred, labels=[0, 1])  
+
+    def create_new_dataset(self, df):
+        count_one = 0
+        count_zero = 0
+        i=0
+        x = 10
+        column_headers = df.columns.values
+        df_new = pd.DataFrame(columns=column_headers)
+        for index, row in df.iterrows():
+            if(index > 300):
+                if(row['Label'] == 1 and count_one<x):
+                    count_one+=1
+                    
+                elif(row['Label'] == 0 and count_zero<x):
+                    count_zero+=1
+                if(i<200):
+                    df_new.loc[i] = row
+                    i += 1
+        print("count_one : ", count_one)
+        print("count_zero : ", count_zero)
+        df_new.to_csv('sample_data_3.csv')
+        return df_new
+    
+    def show_topK(self, classifier, vectorizer, categories, K=10):
+        feature_names = np.asarray(vectorizer.get_feature_names())
+        for i, category in enumerate(categories):
+            topK = np.argsort(classifier.coef_[0])[-K:]
+            print("%s: %s" % (category, " ".join(feature_names[topK])))        
+        
     
 if __name__ == '__main__':
     
@@ -98,6 +131,8 @@ if __name__ == '__main__':
     
     df = pd.read_csv(mf.input_file_path, sep=',')
     X, y = mf.get_input_text_and_label(df)
+    #print(mf.create_new_dataset(df))
+    #sys.exit()
     
     '''
     X = data_preprocessing_1().process_data(X)
@@ -123,7 +158,8 @@ if __name__ == '__main__':
     '''
     
     print("X shape ", X.shape)
-    X_train, y_train, X_test = mf.get_vectorized_data(X, y, labelled_set, unlabelled_set)
+    #X_train, y_train, X_test = mf.get_vectorized_data(X, y, labelled_set, unlabelled_set)
+    X_train, y_train, X_test, vectorizer = vectorization().tfidf_vectorization(X, y, labelled_set, unlabelled_set)
     '''
     print(y_train, y_train.shape)
     unique, counts = np.unique(y_train, return_counts=True)
@@ -135,6 +171,14 @@ if __name__ == '__main__':
     print(X_test.shape)
     #sys.exit()
     
+    '''
+    cl = classification()
+    predicted_labels, prediction_confidence, clf = cl.logistic_regression(X_train, y_train, X_test)
+    print("final_labels :", predicted_labels, predicted_labels.shape)
+    unique, counts = np.unique(predicted_labels, return_counts=True)
+    print(dict(zip(unique, counts)))
+    sys.exit()
+    '''
     
     sample_rate=0.2
     final_labels, clf = semi_supervised_classification().pseudo_labelling(y, X_train, y_train, X_test, labelled_set, unlabelled_set, sample_rate)
@@ -152,6 +196,8 @@ if __name__ == '__main__':
 
     print(mf.classification_rep(X_train, y_train, clf))
     print(mf.confusion_mat(X_train, y_train, clf))
+    
+    mf.show_topK(clf, vectorizer, ['0', '1'], K=10)
     
     #df = mf.update_dataframe(df, X)
     #df.to_csv(mf.output_file_path)
