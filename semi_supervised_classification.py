@@ -64,9 +64,9 @@ class semi_supervised_classification:
         num_of_samples = math.ceil(len(X_train) * self.sample_rate)
         print("num_of_samples : ", num_of_samples)        
         #print("Y Lables: ", final_y, final_y.shape)
-        #print("X_train ", X_train, X_train.shape)
+        #print("X_train ", X_train.shape)
         #print("y_train ", y_train, y_train.shape)
-        #print("x_test ", X_test, X_test.shape)
+        #print("x_test ", X_test.shape)
         #print("labelled set : ", labelled_set, labelled_set.shape)
         #print("unlabelled set : ", unlabelled_set, unlabelled_set.shape)
         
@@ -78,7 +78,7 @@ class semi_supervised_classification:
         prediction_confidence = self.normalization(prediction_confidence)
         pred_conf_sorted = np.argsort(np.absolute(prediction_confidence))
         p_index = pred_conf_sorted[-num_of_samples:]
-        print("Prediction_confidence : \n", prediction_confidence)
+        #print("Prediction_confidence : \n", prediction_confidence)
         #print(pred_conf_sorted, "\n", p_index, "\n",  prediction_confidence[p_index])
         #print(unlabelled_set.shape)
         
@@ -86,7 +86,8 @@ class semi_supervised_classification:
         deadline_val_sorted = np.argsort(np.absolute(deadline_values))
         d_index = deadline_val_sorted[-num_of_samples:]
         #print("deadline values : \n", deadline_values, "\n", deadline_val_sorted, "\n", d_index, "\n", deadline_values[d_index])
-        pred_conf = prediction_confidence + 0.5 * deadline_values
+        #pred_conf = prediction_confidence + 0 * deadline_values
+        pred_conf = prediction_confidence
         #print("Combined \n:", pred_conf)
         pseudo_labels, pseudo_labelled_indices = self.compute_final_label(pred_conf, num_of_samples)
         

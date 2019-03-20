@@ -4,6 +4,9 @@
 #
 
 from nltk.corpus import stopwords
+from nltk.stem import PorterStemmer
+from nltk.stem import WordNetLemmatizer
+from nltk.corpus import wordnet
 import pandas as pd
 import string
 import nltk
@@ -74,12 +77,45 @@ class data_preprocessing_3:
             else:
                 new_words.append(word)
         return new_words
+    
+    def stemming(self, tokenized_words):
+        ps = PorterStemmer()
+        new_words = []
+        for word in tokenized_words:
+            new_words.append(ps.stem(word))
+        return new_words
+    
+    def lematization(self, tokenized_words):
         
+        wordnet_lemmatizer = WordNetLemmatizer()        
+        pos_tags = nltk.pos_tag(tokenized_words)
+        new_words = []
+        for tup in pos_tags:
+            word, tag = tup[0], tup[1]
+            if(word.isalpha()):
+                word = word.lower()
+            if(tag in ['VB', 'VBD', 'VBG','VBN','VBP','VBZ']):
+                tag = wordnet.VERB
+            elif (tag in ['JJ', 'JJR','JJS']):
+                tag = wordnet.ADJ 
+            elif (tag in ['RB', 'RBR', 'RBS']):
+                tag = wordnet.ADV
+            else:
+                tag = wordnet.NOUN
+                        
+            #print(word, tag)
+            new_words.append(wordnet_lemmatizer.lemmatize(word,pos=tag))
+			
+        return new_words
+            
+        
+            
     def preprocess_text(self, X):
         new_X = []
         for cmt in X:
             words = nltk.word_tokenize(str(cmt))
             comments = self.to_lower_case(words)
+            
             #print("Initial word count : ", len(comments))
             comments = self.remove_stopwords(comments)
             #print("After removing stop words ", len(comments))
@@ -90,6 +126,10 @@ class data_preprocessing_3:
             comments = self.remove_digits(comments)
             #print("After removing digits ", len(comments))
             comments = self.replace_question_marks(comments)
+            
+            #comments = self.stemming(comments)
+            
+            comments = self.lematization(comments)
             
             comments = " ".join(comments)
             if(len(comments) == 0):

@@ -7,13 +7,15 @@ from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_extraction.text import CountVectorizer
 import pandas as pd
 import numpy as np
+import nltk
 import sys
+import operator
 
 class word_feature_extraction:
     
     def __init__(self):
         
-        self.input_file_path = "output_file.csv"
+        self.input_file_path = "output_file_lematized.csv"
         self.output_file_path = "output_file_2.csv"
    
     def sort_coo(self, coo_matrix):
@@ -43,6 +45,23 @@ class word_feature_extraction:
             results[feature_vals[idx]]=score_vals[idx]
         
         return results
+    
+    def most_common_word_features(self, X, num_of_features):
+        features = {}
+        for cmt in X:
+            tokenized_words = nltk.word_tokenize(str(cmt))
+            for word in tokenized_words:
+                if(word not in features.keys()):
+                    features[word] = 1
+                else:
+                    features[word] += 1
+                    
+        sorted_dict = sorted(features.items(), key=operator.itemgetter(1))
+        
+        return features, sorted_dict[-num_of_features:]
+            
+            
+            
      
     
     
@@ -55,6 +74,19 @@ if __name__ == '__main__':
     X, y = mf.get_input_text_and_label(df)
     
     y, labelled_set, unlabelled_set = mf.get_test_train_split(X, y)
+    z = y[labelled_set]
+    index = np.where(z == 0)
+    index = labelled_set[index]
+    
+    print(index, index.shape)
+    X = X[index]
+    features, top_features = wf.most_common_word_features(X, 30)
+    #print(features)
+    #print(sorted(features.items(), key=operator.itemgetter(1)))
+    print()
+    print(top_features)
+    sys.exit()
+    
     
     cv=CountVectorizer(max_df=0.85)
     word_count_vector=cv.fit_transform(X)

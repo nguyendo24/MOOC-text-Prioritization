@@ -88,7 +88,8 @@ class vectorization:
         return X_train, y_train, X_test
     
     def tfidf_vectorization(self, X, y, labelled_set, unlabelled_set):
-        vectorizer = TfidfVectorizer(ngram_range=(1,1), max_df=0.8, norm='l2', use_idf=True, smooth_idf=True, sublinear_tf=False)
+        #vectorizer = TfidfVectorizer(ngram_range=(1,1), max_df=0.8, norm='l2', use_idf=True, smooth_idf=True, sublinear_tf=False)
+        vectorizer = TfidfVectorizer(ngram_range=(1,1), norm='l2', use_idf=True, smooth_idf=True, sublinear_tf=False)
         #print(X.shape)
         #vectorizer = CountVectorizer(stop_words='english')
         X = vectorizer.fit_transform(X)

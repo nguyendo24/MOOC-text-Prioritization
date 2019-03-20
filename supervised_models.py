@@ -4,13 +4,18 @@
 #
 from word_to_vec_vectorizer import vectorization
 from sklearn import svm
+from sklearn.svm import SVC
 from sklearn.svm import LinearSVC
 from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import MultinomialNB
 from sklearn import metrics
 from Semi_EM_NB import Semi_EM_MultinomialNB
 from scipy import sparse
+from sklearn.semi_supervised import LabelPropagation
+from compare_labels_probabilities import compare_labels_probabilities
+from sklearn.tree import DecisionTreeClassifier
 import numpy as np
+from sklearn.ensemble import RandomForestClassifier
 import sys
 
 class classification:
@@ -32,10 +37,20 @@ class classification:
         prediction_confidence = clf.decision_function(X_test)
         return predicted_labels, prediction_confidence, clf
     
+    def radial_svc(self, X_train, y_train, X_test):
+        clf = SVC(gamma='auto', kernel='rbf')
+        clf.fit(X_train, y_train)
+        predicted_labels = clf.predict(X_test)
+        prediction_confidence = clf.decision_function(X_test)
+        return predicted_labels, prediction_confidence, clf
+    
     def logistic_regression(self, X_train, y_train, X_test):
         clf = LogisticRegression(random_state=0, solver='lbfgs', multi_class='multinomial').fit(X_train, y_train)
         predicted_labels = clf.predict(X_test)
         prediction_confidence = clf.decision_function(X_test)
+        final_labels = clf.predict(X_test)
+        label_prob = clf.predict_proba(X_test)
+        print(compare_labels_probabilities().compare(label_prob, final_labels))
         return predicted_labels, prediction_confidence, clf
        
     #def calibration_isotonic(self, X_train, y_train, X_test, clf)
@@ -71,7 +86,8 @@ class classification:
         print(pred)
         unique, counts = np.unique(pred, return_counts=True)
         print(dict(zip(unique, counts)))
-        sys.exit()
+        return pred, em_nb_clf
+        #sys.exit()
         #print(metrics.classification_report(test_Xy.target, pred, target_names=['1','2']))
         # pprint(metrics.confusion_matrix(test_Xy.target, pred))
         #print(metrics.accuracy_score(test_Xy.target, pred))
@@ -90,6 +106,33 @@ class classification:
         #show_topK(em_nb_clf, vectorizer, ['1','2'], K=10) # keywords for each class by semisupervised EM NB classifier
         '''
         #print(nb_clf.class_log_prior_, em_nb_clf.clf.class_log_prior_)
+        
+        
+    def label_propagation(self, X_train, y, X_test):
+        
+        clf = LabelPropagation()
+        X = np.concatenate((X_train, X_test),axis=0)
+        print("X shape now ", X.shape)
+        print("Y shape now ", y.shape)
+        clf.fit(X, y)
+        final_labels = clf.predict(X_test)
+        label_prob = clf.predict_proba(X_test)
+        print(compare_labels_probabilities().compare(label_prob, final_labels))
+        return final_labels, clf
+    
+    
+    def decision_tree(self, X_train, y_train, X_test):
+        clf = DecisionTreeClassifier(random_state=0)
+        clf.fit(X_train, y_train)
+        final_labels = clf.predict(X_test)
+        return final_labels, clf
+    
+    def random_forest(self, X_train, y_train, X_test):
+        clf = RandomForestClassifier()
+        clf.fit(X_train, y_train)
+        final_labels = clf.predict(X_test)
+        return final_labels, clf
+        
 # =============================================================================
 # cl = classification()
 # X_train, y_train, X_test, labelled_set, unlabelled_set = cl.get_vectorized_data()

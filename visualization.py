@@ -63,15 +63,15 @@ class visualtization:
             col = ['red','blue','green']
             #print( xy, cluster_l, label)
             
-            plt.scatter(xy[0],xy[1], c=col[label], alpha=0.9, s=30)
+            plt.scatter(xy[0],xy[1], c=col[label], alpha=0.2, s=30)
+            '''
             plt.annotate(cluster_l,
                          xy=(xy[0], xy[1]),
-                         xytext=(5, 3),
                          textcoords='offset points',
                          ha='right',
                          va='bottom')
-            
-        plt.savefig('plot_word2vec.png', format='png', dpi=150, bbox_inches='tight')
+            '''
+        plt.savefig('plot_tfidf_zall.png', format='png', dpi=150, bbox_inches='tight')
         plt.show()
         
 if __name__ == '__main__':
@@ -85,9 +85,10 @@ if __name__ == '__main__':
     
     print("X shape ", X.shape)
     #X_train, y_train, X_test = mf.get_vectorized_data(X, y, labelled_set, unlabelled_set)
-    X_train, y_train, X_test = vectorization().word2vec_vectorization(X, y, labelled_set, unlabelled_set)
+    #X_train, y_train, X_test = vectorization().word2vec_vectorization(X, y, labelled_set, unlabelled_set)
+    X_train, y_train, X_test, vectorizer = vectorization().tfidf_vectorization(X, y, labelled_set, unlabelled_set)
     print(X_train.shape, type(X_train))
     print(y_train.shape, type(y_train))
     X = np.concatenate((X_train, X_test),axis=0)
     #print(np.array(y_train))   
-    v.plot_graph(X_train, y_train)
+    v.plot_graph(X, y)

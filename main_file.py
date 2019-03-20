@@ -6,6 +6,9 @@
 import numpy as np
 import pandas as pd
 import sys
+from validation import validation
+from supervised_models import classification
+from feature_selection import feature_selection
 from word_to_vec_vectorizer import vectorization
 from data_preprocessing_1 import data_preprocessing_1
 from data_preprocessing_2 import data_preprocessing_2
@@ -13,15 +16,18 @@ from data_preprocessing_3 import data_preprocessing_3
 from semi_supervised_classification import semi_supervised_classification
 from sklearn.metrics import classification_report
 from sklearn.metrics import confusion_matrix
-from supervised_models import classification
+
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.feature_extraction.text import TfidfTransformer
+
 import math
 
 class main_file:
     
     def __init__(self):
         
-        self.input_file_path = "output_file.csv"
-        self.output_file_path = "output_file_2.csv"
+        self.input_file_path = "data/output_file_basic_prprocessing.csv"
+        self.output_file_path = "none.csv"
         
     def get_input_text_and_label(self, df):
         #print(data['text'])
@@ -90,32 +96,31 @@ class main_file:
     
     def confusion_mat(self, X_test, y_true, clf):
         y_pred = clf.predict(X_test)
-        pred_conf = clf.decision_function(X_test)
-        print("Final labelling")
-        for y_p, y_t, conf in zip(y_pred, y_true, pred_conf):
-            print(y_p, "\t", y_t, "\t", conf)
         return confusion_matrix(y_true, y_pred, labels=[0, 1])  
 
     def create_new_dataset(self, df):
         count_one = 0
         count_zero = 0
         i=0
-        x = 10
+        x = 20
         column_headers = df.columns.values
         df_new = pd.DataFrame(columns=column_headers)
         for index, row in df.iterrows():
-            if(index > 300):
-                if(row['Label'] == 1 and count_one<x):
-                    count_one+=1
-                    
-                elif(row['Label'] == 0 and count_zero<x):
-                    count_zero+=1
-                if(i<200):
-                    df_new.loc[i] = row
-                    i += 1
+            if(row['Label'] == 1 and count_one< 18):
+                count_one+=1
+                df_new.loc[i] = row
+                i += 1
+                
+            elif(row['Label'] == 0 and count_zero<x):
+                count_zero+=1
+                df_new.loc[i] = row
+                i += 1
+            elif((count_one < 10 or count_zero < x) and (row['Label'] != 1 and row['Label'] !=0 )):
+                df_new.loc[i] = row
+                i += 1
         print("count_one : ", count_one)
         print("count_zero : ", count_zero)
-        df_new.to_csv('sample_data_3.csv')
+        df_new.to_csv('sample_data_4.csv')
         return df_new
     
     def show_topK(self, classifier, vectorizer, categories, K=10):
@@ -128,12 +133,12 @@ class main_file:
 if __name__ == '__main__':
     
     mf = main_file()
+    cl = classification()
     
     df = pd.read_csv(mf.input_file_path, sep=',')
     X, y = mf.get_input_text_and_label(df)
-    #print(mf.create_new_dataset(df))
+    #mf.create_new_dataset(df)
     #sys.exit()
-    
     '''
     X = data_preprocessing_1().process_data(X)
     X = data_preprocessing_2().process_data(X)    
@@ -147,6 +152,8 @@ if __name__ == '__main__':
     sys.exit()
     '''
     
+    #X = data_preprocessing_3().preprocess_text(X)
+    #sys.exit()
     y, labelled_set, unlabelled_set = mf.get_test_train_split(X, y)
     
     '''
@@ -157,9 +164,29 @@ if __name__ == '__main__':
     sys.exit()
     '''
     
-    print("X shape ", X.shape)
-    #X_train, y_train, X_test = mf.get_vectorized_data(X, y, labelled_set, unlabelled_set)
     X_train, y_train, X_test, vectorizer = vectorization().tfidf_vectorization(X, y, labelled_set, unlabelled_set)
+    #X_train, y_train, X_test = vectorization().word2vec_vectorization(X, y, labelled_set, unlabelled_set)
+    print("X test shape : ", X_test.shape)
+    print("X train shape : ", X_train.shape)
+    
+    '''
+    conf_mat, precision, recall, accuracy, f1_score = validation().stratified_cross_validation(X_train, y_train, X_test, y, labelled_set, unlabelled_set)
+    print("Confusion matrix : \n", conf_mat)
+    print("Precision : ", precision)
+    print("recall : ", recall)
+    print("Accusracy : ", accuracy)
+    print("F1 Score : ", f1_score)
+    sys.exit()
+    '''
+    
+    
+    '''
+    X_train, X_test = feature_selection().select_k_best(X_train, y_train, X_test)
+    print("X test shape : ", X_test.shape)
+    print("X train shape : ", X_train.shape)
+    #sys.exit()
+    '''
+    
     '''
     print(y_train, y_train.shape)
     unique, counts = np.unique(y_train, return_counts=True)
@@ -171,17 +198,47 @@ if __name__ == '__main__':
     print(X_test.shape)
     #sys.exit()
     
-    '''
+    
     cl = classification()
-    predicted_labels, prediction_confidence, clf = cl.logistic_regression(X_train, y_train, X_test)
+    #predicted_labels, prediction_confidence, clf = cl.decision_tree(X_train, y_train, X_test)
+    predicted_labels, clf = cl.random_forest(X_train, y_train, X_test)
     print("final_labels :", predicted_labels, predicted_labels.shape)
     unique, counts = np.unique(predicted_labels, return_counts=True)
     print(dict(zip(unique, counts)))
-    sys.exit()
+    
+    importances = clf.feature_importances_
+    indices = np.argsort(importances)[::-1]
+    
+    feature_names = vectorizer.get_feature_names()
+    top_words = []
+    
+    for i in range(100):
+        top_words.append(feature_names[indices[i]])
+        #print(feature_names)
+    
+    print(top_words)
+    
     '''
+    importances = clf.feature_importances_
+    std = np.std([tree.feature_importances_ for tree in clf.estimators_],
+             axis=0)
+    indices = np.argsort(importances)[::-1]
+
+    # Print the feature ranking
+    print("Feature ranking:")
+
+    for f in range(X_train.shape[1]):
+        print("%d. feature %d (%f)" % (f + 1, indices[f], importances[indices[f]]))
+        
+    '''
+
+    sys.exit()
+    
     
     sample_rate=0.2
-    final_labels, clf = semi_supervised_classification().pseudo_labelling(y, X_train, y_train, X_test, labelled_set, unlabelled_set, sample_rate)
+    #final_labels, clf = semi_supervised_classification().pseudo_labelling(y, X_train, y_train, X_test, labelled_set, unlabelled_set, sample_rate)
+    
+    final_labels, clf = cl.label_propagation(X_train, y, X_test)
     
     '''
     print("y : ", y)
@@ -196,8 +253,11 @@ if __name__ == '__main__':
 
     print(mf.classification_rep(X_train, y_train, clf))
     print(mf.confusion_mat(X_train, y_train, clf))
+    print(clf.best_estimator_)
     
-    mf.show_topK(clf, vectorizer, ['0', '1'], K=10)
+    print(clf.best_estimator_.feature_importances_)
+    
+    #mf.show_topK(clf, vectorizer, ['0', '1'], K=10)
     
     #df = mf.update_dataframe(df, X)
     #df.to_csv(mf.output_file_path)
