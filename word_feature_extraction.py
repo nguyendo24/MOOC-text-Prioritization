@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 #
-# author: amanul haque
+# author: Amanul Haque
 #
-from main_file import main_file
+# File Description: This code is for word feature extraction
+
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.feature_extraction.text import CountVectorizer
 import pandas as pd
@@ -60,9 +61,34 @@ class word_feature_extraction:
         
         return features, sorted_dict[-num_of_features:]
             
+      
+    def print_top10(self, vectorizer, clf, class_labels):
+        """Prints features with the highest coefficient values, per class"""
+        feature_names = vectorizer.get_feature_names()
+        for i, class_label in enumerate(class_labels):
+            top10 = np.argsort(clf.coef_[0])[-10:]
+            print("%s: %s" % (class_label,
+                  " ".join(feature_names[j] for j in top10)))
             
+    def show_most_informative_features(self, vectorizer, clf, n=20):
+        #print("Coeff ", clf.coef_.shape)
+        feature_names = vectorizer.get_feature_names()
+        '''
+        print(len(feature_names))
+        unique, counts = np.unique(clf.coef_, return_counts=True)
+        dic = dict(zip(unique, counts))
+        print(sorted(dic.items(), key=operator.itemgetter(0)))
+        '''
+        coefs_with_fns = sorted(zip(clf.coef_[0], feature_names))
+        l = []
+        top = zip(coefs_with_fns[:n], coefs_with_fns[:-(n + 1):-1])
+        for (coef_1, fn_1), (coef_2, fn_2) in top:
+            print("\t%.4f\t%-15s\t\t%.4f\t%-15s" % (coef_1, fn_1, coef_2, fn_2))
+            l.append(fn_2)
             
-     
+        print(l)
+                
+         
     
     
 if __name__ == '__main__':

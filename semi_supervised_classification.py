@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 #
-# author: amanul haque
+# author: Amanul Haque
 #
+# File Description: This code trains a semi-supervised model using pseudo-labeling (this can utilize many classification model psuedo-labelling) 
+
 
 from word_to_vec_vectorizer import vectorization
 from supervised_models import classification
@@ -82,9 +84,11 @@ class semi_supervised_classification:
         #print(pred_conf_sorted, "\n", p_index, "\n",  prediction_confidence[p_index])
         #print(unlabelled_set.shape)
         
+        '''
         deadline_values = metadata().calculate_deadline_weight(unlabelled_set)
         deadline_val_sorted = np.argsort(np.absolute(deadline_values))
         d_index = deadline_val_sorted[-num_of_samples:]
+        '''
         #print("deadline values : \n", deadline_values, "\n", deadline_val_sorted, "\n", d_index, "\n", deadline_values[d_index])
         #pred_conf = prediction_confidence + 0 * deadline_values
         pred_conf = prediction_confidence

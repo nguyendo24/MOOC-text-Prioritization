@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 #
-# author: amanul haque
+# author: Amanul Haque
 #
+# File Description: This code does standard NLP data-preprocessing like: lemmatization, stop-word removal, stemming etc.
+
 
 from nltk.corpus import stopwords
 from nltk.stem import PorterStemmer
@@ -19,7 +21,9 @@ class data_preprocessing_3:
     def __init__(self):
         self.output_file_path = ""
         self.input_file_path = ""
-    
+        #self.remove_list = ['constructor', 'name', 'something', 'figure', 'create', 'inhericdoc', 'complete', 'variable', 'boundary', 'issue', 'instantiate', 'miss', 'facultyrecordsio', 'write', 'sum', 'cast', 'test', 'multiple', 'anyone', 'must', 'problem', 'second', 'properly', 'correctly', 'false', 'weird', 'try', 'bugreader', 'caught', 'birthpredator', 'parameter', 'coverage', 'combination', 'occur', 'methods', 'ts_coursemanagertest', 'cheat', 'command', 'summary', 'is', 'birthprey', 'directly', 'test_movies', 'child', 'bugtrackermodel', 'need', 'todo', 'catch', 'error', 'confuse']
+        self.remove_list = ['q_mark']
+        
     def write_to_text_file(self, text):
         f = open("processed_text.txt", "w")
         text = " ".join(text)
@@ -107,6 +111,13 @@ class data_preprocessing_3:
             new_words.append(wordnet_lemmatizer.lemmatize(word,pos=tag))
 			
         return new_words
+    
+    def remove_words(self, tokenized_words, remove_list):
+        new_words = []
+        for word in tokenized_words:
+            if word not in remove_list:
+                new_words.append(word)
+        return new_words
             
         
             
@@ -115,6 +126,9 @@ class data_preprocessing_3:
         for cmt in X:
             words = nltk.word_tokenize(str(cmt))
             comments = self.to_lower_case(words)
+            comments = self.stemming(comments)
+            
+            '''
             
             #print("Initial word count : ", len(comments))
             comments = self.remove_stopwords(comments)
@@ -130,6 +144,9 @@ class data_preprocessing_3:
             #comments = self.stemming(comments)
             
             comments = self.lematization(comments)
+            
+            comments = self.remove_words(comments, self.remove_list)
+            '''
             
             comments = " ".join(comments)
             if(len(comments) == 0):

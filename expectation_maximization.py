@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
+#
+# author: Amanul Haque
+#
+# File Description: This code does basic data-preprocessing like removing the unicodes, scraping the HTML tags etc.
+#                   This is required becuase the initial generated dataset has HTML tags and other encodings
 
-# Import packages and libraries
 import numpy as np
 import random as rnd
 import nltk as nk
@@ -17,28 +21,15 @@ import pandas as pd
 
 from Semi_EM_NB import Semi_EM_MultinomialNB
 
-'''
-# Load train and test data set with class labels 
-train_Xy = fetch_20newsgroups(subset='train', remove=('headers', 'footers', 'quotes'))
-test_Xy = fetch_20newsgroups(subset='test', remove=('headers', 'footers', 'quotes'))
-#print(train_Xy.data)
-'''
-
 df = pd.read_excel('sample_data.xlsx')
 train_Xy = df.iloc[0:10,]
 test_Xy = df.iloc[10:20,]
-#print(df.iloc[0:10].target)
-#print(train_Xy.text)
-#print(test_Xy)
 
 # Convert all text data into tf-idf vectors 
 vectorizer = TfidfVectorizer(stop_words='english', min_df=1, max_df=0.9)
 # vectorizer = TfidfVectorizer()
 train_vec = vectorizer.fit_transform(train_Xy.data)
 test_vec = vectorizer.transform(test_Xy.data)
-#print(train_vec[0:3])
-
-#, test_vec.shape)
 
 # Divide train data set into labeled and unlabeled data sets
 n_train_data = train_vec.shape[0]

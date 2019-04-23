@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 #
-# author: amanul haque
+# author: Amanul Haque
 #
+# File Description: This code is to convert text into word2vec
+
 
 from gensim.models import Word2Vec
 from gensim.models import KeyedVectors

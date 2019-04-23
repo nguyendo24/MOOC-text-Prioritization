@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 #
-# author: amanul haque
+# author: Amanul Haque
 #
+# File Description: This code finds relationship between parameters.
+#                   Both parameters need to be of same length in form of a list, numpy array or pandas series (or any other iterable 1-d structure)
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -11,7 +13,7 @@ import sys
 class correlations:
     
     def __init__(self):
-        self.input_file_path = "Survey_results/binaried_correlation_data.csv"
+        self.input_file_path = "Data/finla_survey_data_results.csv"
         
     def get_data(self, filepath):
         data = pd.read_excel(filepath)
@@ -47,32 +49,6 @@ if __name__ == '__main__':
     
     c = correlations()
     df = pd.read_csv(c.input_file_path)
-    x, y, z = df['Urgency'], df['Complexity'], df['Clarity']
-    print(c.compare_individual_params(x,y))
+    x, y, z, = df['aggregate_Urgency'], df['aggregate_Complexity'], df['aggregate_Clarity']
     
-    
-    '''
-    x, y, z = c.get_data(c.input_file_path)
-    #c.plot_graph(x, y, z)
-    x = c.binarize_variables(x)
-    y = c.binarize_variables(y)
-    z = c.binarize_variables(z)
-    df = pd.DataFrame()
-    df['Urgency'] = x
-    df['Complexity'] = y
-    df['Clarity'] = z
-    print(df)
-    print(type(x))
-    #df.to_csv("Survey_results/binaried_correlation_data.csv")
-    sys.exit()
-    
-    x = np.array(x)
-    y = np.array(y)
-    z = np.array(z)
-    plt.scatter(x,y)
-    plt.show()
-    print(np.corrcoef(x,y))
-    print(np.corrcoef(x,z))
-    print(np.corrcoef(z,y))
-    #print(x, y, z)
-    '''
+    print("Pearson correlation: ", np.corrcoef(x,y))

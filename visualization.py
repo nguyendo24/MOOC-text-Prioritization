@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 #
-# author: amanul haque
+# author: Amanul Haque
 #
+# File Description: This code is for data visualization
+
 
 from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt

@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 #
-# author: amanul haque
+# author: Amanul Haque
 #
+# File Description: This code does basic data-preprocessing like removing the unicodes, scraping the HTML tags etc.
+#                   This is required becuase the initial generated dataset has HTML tags and other encodings
 
 from openpyxl import Workbook
 from openpyxl import load_workbook

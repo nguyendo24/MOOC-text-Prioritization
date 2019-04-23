@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 #
-# author: amanul haque
+# author: Amanul Haque
 #
+# File Description: This code does data-preprocessing specific to JAVA2015 dataset.
+#                   like detecting code blocks, comment lines, error message etc, and replace them with custom tags for uniformity across the dataset
 
 import sys
 import re
